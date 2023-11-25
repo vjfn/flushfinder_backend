@@ -1,0 +1,11 @@
+{
+  "name": "flushfinder_backend",
+  "version": "1.0.0",
+  "description": "backend de flushfinder",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "FlushTeam",
+  "license": "ISC"
+}
