@@ -1,18 +1,23 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+
 
 import { Prueba } from './models/prueba.model';
 import { Flush } from './models/flush.model';
 
 import bodyParser from 'body-parser';
+import flushRoutes from './routes/flush';
 /* import flushRoutes from './routes/flush'; */
 
 const app = express(); //packete que permite hacer una api
 app.use(express.json()); //lee el json porfavor
 app.use(cors());
- 
-mongoose.connect('mongodb://admin:multisyncv72mongodb@server.flushfinder.es:27017/?authMechanism=DEFAULT&authSource=admin');
+
+mongoose.connect(`mongodb://${process.env.DB_URL}/?authMechanism=DEFAULT&authSource=admin`);
 
 app.get('/', (req, res) => {
     res.send('Hello World with TypeScript!');
@@ -43,6 +48,7 @@ app.post('/prueba', async (req, res) => {
 });
 
 //CRUD FLUSH
+app.use('/flush', flushRoutes)
 //CREATE
 app.post('/flush', async (req, res) => {
     const newFlush = {
@@ -62,6 +68,7 @@ app.post('/flush', async (req, res) => {
     flush.save(); */
     res.json(flush);
 });
+
 
 //READ
 app.get('/flushes', async (req, res) => {

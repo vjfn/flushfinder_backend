@@ -4,10 +4,10 @@
 import express from 'express';
 import { getAllFlushItems, createFlushItem } from '../controllers/flushControler';
 
-const router = express.Router();
+const flushRoutes = express.Router();
 
 // Rutas relacionadas con Flush
-router.get('/flush', getAllFlushItems);
-router.post('/flush', createFlushItem);
+flushRoutes.get('/', getAllFlushItems);
+flushRoutes.post('/flush', createFlushItem);
 
-export default router;
+export default flushRoutes;

@@ -41,10 +41,10 @@ const flushSchema = new Schema({
     }
 });
 
-/* flushSchema.pre<IFlush>('save', function (next) {
+flushSchema.pre<IFlush>('save', function (next) {
     this.created = new Date();
     next();
-}); */
+});
 
 interface IFlush extends Document {
     nombre: string;
