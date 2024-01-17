@@ -1,4 +1,6 @@
-import { Schema, Document, model } from 'mongoose';
+//Esto carece de utilidad actual
+
+/* import { Schema, Document, model } from 'mongoose';
 
 const pruebaSchema = new Schema({
     nombre: {
@@ -10,4 +12,4 @@ interface IPrueba extends Document {
     nombre: string;
 }
 
-export const Prueba = model<IPrueba>('Prueba', pruebaSchema)
+export const Prueba = model<IPrueba>('Prueba', pruebaSchema) */

@@ -1,11 +1,8 @@
 import { Schema, Document, model } from 'mongoose';
 
-
-//Crear modelos (mongodb schema)
-//Pensar modelos y propiedades de flush item, crear los modelos
 const flushSchema = new Schema({
-    nombre: {
-        unique: true,
+    name: {
+/*         unique: true, */
         type: String
     },
     image: {
@@ -47,7 +44,7 @@ flushSchema.pre<IFlush>('save', function (next) {
 });
 
 interface IFlush extends Document {
-    nombre: string;
+    name: string;
     image: string;
     score: string;
     condition: string;
