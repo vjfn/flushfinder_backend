@@ -57,6 +57,7 @@ export const createFlush = async (req: Request, res: Response) => {
           changingstation: req.body.changingstation,
           free: req.body.free,
       };
+      console.log(newFlush);
 
       const flush = await Flush.create(newFlush);
       res.json(flush);

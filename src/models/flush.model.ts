@@ -20,7 +20,7 @@ const flushSchema = new Schema({
     longitude: {
         type: String
     },
-    handicaped: {
+    handicapped: {
         type: Boolean
     },
     changingstation: {
@@ -33,8 +33,8 @@ const flushSchema = new Schema({
         type: Date
     },
     count: {
-        type: String,
-        default: '1'
+        type: Number,
+        default: 1
     }
 });
 
@@ -50,14 +50,13 @@ interface IFlush extends Document {
     condition: string;
     latitude: string;
     longitude: string;
-    handicaped: boolean;
+    handicapped: boolean;
     changingstation: boolean;
     free: boolean;
     created: Date;
-    count: string;
+    count: number;
 
 }
  
-
 export const Flush = model<IFlush>('Flush', flushSchema);
 export { IFlush };
