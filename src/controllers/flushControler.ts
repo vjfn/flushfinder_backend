@@ -74,7 +74,17 @@ export const createFlush = async (req: Request, res: Response) => {
 }); */
 export const getFlushes = async (req: Request, res: Response) => {
   try {
-      const flushes = await Flush.find();
+    const handicapped = req.query.handicapped;
+    const changingstation = req.query.changingstation;
+    const free = req.query.free;
+
+    const filter: { handicapped?: boolean; changingstation?: boolean; free?: boolean } = {};
+    if (handicapped) filter.handicapped = handicapped === 'true';
+    if (changingstation) filter.changingstation = changingstation === 'true';
+    if (free) filter.free = free === 'true';
+    
+
+    const flushes = await Flush.find(filter);
       res.json(flushes);
   } catch (error) {
       console.error(error);

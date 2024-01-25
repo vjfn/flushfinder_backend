@@ -10,8 +10,8 @@ const flushRoutes = express.Router();
 /* flushRoutes.get('/', getAllFlushItems);
 flushRoutes.post('/flush', createFlushItem); */
 flushRoutes.post('/', createFlush);
-flushRoutes.get('/flushes', getFlushes);
-flushRoutes.put('/flush/:id', updateFlush);
-flushRoutes.delete('/flushDel/:id', deleteFlush);
+flushRoutes.get('/', getFlushes);
+flushRoutes.put('/:id', updateFlush);
+flushRoutes.delete('/:id', deleteFlush);
 
 export default flushRoutes;

@@ -16,6 +16,7 @@ app.use(express.json()); //lee el json porfavor
 app.use(cors());
 app.use(bodyParser.json()); // Middleware para el manejo de solicitudes JSON
 
+
 //Conexion segura a BD
 mongoose.connect(`mongodb://${process.env.DB_URL}/?authMechanism=DEFAULT&authSource=admin`);
 
