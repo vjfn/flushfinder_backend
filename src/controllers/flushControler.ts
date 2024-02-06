@@ -2,48 +2,11 @@
 import { Request, Response } from 'express';
 import { Flush, IFlush } from '../models/flush.model';
 
-/* // Obtener todos los objetos Flush OBSOLETO
-export const getAllFlushItems = async (req: Request, res: Response) => {
-  try {
-    const flushItems = await Flush.find();
-    res.json(flushItems);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al obtener los objetos Flush' });
-  }
-};
 
-// Crear un nuevo objeto Flush OBSOLETO
-export const createFlushItem = async (req: Request, res: Response) => {
-  try {
-    const newFlushItem: IFlush = req.body; // Asume que los datos están en el cuerpo de la solicitud
-    const flushItem = new Flush(newFlushItem);
-    await flushItem.save();
-    res.json(flushItem);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al crear un objeto Flush' });
-  }
-}; */
 
 //CRUD FLUSH
 //CREATE
-/* app.post('/flush', async (req, res) => {
-  const newFlush = {
-    nombre: req.body.nombre,
-    image: req.body.image,
-    score: req.body.score,
-    condition: req.body.condition,
-    latitude: req.body.latitude,
-    longitude: req.body.longitude,
-    handicaped: req.body.handicaped,
-    changingstation: req.body.changingstation,
-    free: req.body.free,
-  };
 
-  const flush = await Flush.create(newFlush);
-  res.json(flush);
-}); */
 export const createFlush = async (req: Request, res: Response) => {
   try {
       const newFlush = {
@@ -68,11 +31,73 @@ export const createFlush = async (req: Request, res: Response) => {
 };
 
 //READ
-/* app.get('/flushes', async (req, res) => {
-  const flushes = await Flush.find();
-  res.json(flushes);
-}); */
+interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
 export const getFlushes = async (req: Request, res: Response) => {
+  try {
+    const handicapped = req.query.handicapped;
+    const changingstation = req.query.changingstation;
+    const free = req.query.free;
+    
+    const userCoordinates: Coordinates = {
+      latitude: parseFloat(req.query.latitude as string),
+      longitude: parseFloat(req.query.longitude as string),
+    };
+
+    // http://localhost:3000/flush?latitude=36.719585112950064&longitude=-4.363419
+
+    const filter: { handicapped?: boolean; changingstation?: boolean; free?: boolean } = {};
+    if (handicapped) filter.handicapped = handicapped === 'true';
+    if (changingstation) filter.changingstation = changingstation === 'true';
+    if (free) filter.free = free === 'true';
+
+    // Obtener todos los flushes y calcular la distancia
+    const flushes = await Flush.find(filter);
+    const flushesWithDistance = flushes.map((flush) => {
+      const flushCoordinates: Coordinates = {
+        latitude: Number(flush.latitude),
+        longitude: Number(flush.longitude),
+      };
+      return {
+        flush,
+        distance: haversineDistance(userCoordinates, flushCoordinates),
+      };
+    });
+
+    // Ordenar por distancia de menor a mayor y tomar los primeros 20
+    const sortedFlushes = flushesWithDistance.sort((a, b) => a.distance - b.distance).slice(0, 20);
+
+    // Extraer solo los flushes, sin la información de distancia
+    const resultFlushes = sortedFlushes.map((item) => item.flush);
+
+    res.json(resultFlushes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error en getFlushes' });
+  }
+};
+
+function haversineDistance(pointA: Coordinates, pointB: Coordinates): number {
+  var radius = 6371;
+
+  const deltaLatitude = (pointB.latitude - pointA.latitude) * Math.PI / 180;
+  const deltaLongitude = (pointB.longitude - pointA.longitude) * Math.PI / 180;
+
+  const halfChordLength = Math.cos(
+      pointA.latitude * Math.PI / 180) * Math.cos(pointB.latitude * Math.PI / 180) 
+      * Math.sin(deltaLongitude/2) * Math.sin(deltaLongitude/2)
+      + Math.sin(deltaLatitude/2) * Math.sin(deltaLatitude/2);
+
+  const angularDistance = 2 * Math.atan2(Math.sqrt(halfChordLength), Math.sqrt(1 - halfChordLength));
+
+  return radius * angularDistance;
+}
+
+
+/* export const getFlushes = async (req: Request, res: Response) => {
   try {
     const handicapped = req.query.handicapped;
     const changingstation = req.query.changingstation;
@@ -90,19 +115,10 @@ export const getFlushes = async (req: Request, res: Response) => {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error en getFlushes' });
   }
-};
+}; */
 
 
 //UPDATE
-/* app.put('/flush/:id', async (req, res) => {
-  const id = req.params.id;
-  const flush = await Flush.findByIdAndUpdate(id, req.body);
-  if (flush) {
-    res.json(flush);
-  } else {
-    res.json({ error: 'No se encontró el documento' });
-  }
-}); */
 export const updateFlush = async (req: Request, res: Response) => {
   try {
       const id = req.params.id;
@@ -119,11 +135,7 @@ export const updateFlush = async (req: Request, res: Response) => {
 };
 
 //DELETE
-/* app.delete('/flush/:id', async (req, res) => {
-  const id = req.params.id;
-  await Flush.findByIdAndDelete(id);
-  res.json({ message: 'El documento se eliminó correctamente' });
-}); */
+
 export const deleteFlush = async (req: Request, res: Response) => {
   try {
       const id = req.params.id;

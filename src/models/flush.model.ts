@@ -15,10 +15,10 @@ const flushSchema = new Schema({
         type: String
     },
     latitude: {
-        type: String
+        type: Number
     },
     longitude: {
-        type: String
+        type: Number
     },
     handicapped: {
         type: Boolean
@@ -48,8 +48,8 @@ interface IFlush extends Document {
     image: string;
     score: string;
     condition: string;
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
     handicapped: boolean;
     changingstation: boolean;
     free: boolean;
