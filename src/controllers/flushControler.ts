@@ -2,21 +2,11 @@
 import { Flush, IFlush } from '../models/flush.model';
 import { Request, Response } from 'express';
 
-import multer, { Multer, StorageEngine } from 'multer';
+import { upload } from '..';
 
 import * as path from 'path';
 import * as fs from 'fs';
 
-const storage: StorageEngine = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '..', '..', 'uploads')); // Define la carpeta de destino
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); // Define el nombre del archivo
-  },
-});
-
-export const upload: Multer = multer({ storage: storage });
 
 const generateRandomNumber = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min) + min);
@@ -187,7 +177,6 @@ export const createFlush = async (req: Request, res: Response) => {
           name: req.body.name,
           image: req.body.image,
           score: req.body.score,
-/*           condition: req.body.condition, */
           latitude: req.body.latitude,
           longitude: req.body.longitude,
           handicapped: req.body.handicapped,

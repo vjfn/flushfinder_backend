@@ -6,12 +6,12 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
-import multer, { MulterError } from 'multer';
 import path from 'path';
-import { upload } from './controllers/flushControler';
+import multer, { Multer, StorageEngine,MulterError } from 'multer';
 
 import { Flush } from './models/flush.model';
 import flushRoutes from './routes/flush';
+
 
 const app = express(); //packete que permite hacer una api
 
@@ -24,6 +24,29 @@ app.use(bodyParser.json()); // Middleware para el manejo de solicitudes JSON
 app.get('/', (req, res) => {
     res.send('Hello World with TypeScript!');
 });
+
+//Multer config
+
+const storage: StorageEngine = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname,  /* '..', */ '..',  'uploads')); // Define la carpeta de destino
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); // Define el nombre del archivo
+  },
+});
+
+// Manejo de errores de Multer
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (err instanceof MulterError) {
+    console.error('Multer Error:', err.message);
+    res.status(400).json({ error: 'Error en la carga del archivo' });
+  } else {
+    next(err);
+  }
+});
+
+export const upload: Multer = multer({ storage: storage });
 
 //Rutas
 app.use('/flush',upload.single('image'), flushRoutes)

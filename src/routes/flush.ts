@@ -4,12 +4,12 @@
 import express from 'express';
 import { createFlush,getFlushes,updateFlush,deleteFlush } from '../controllers/flushControler';
 
-import { upload } from '../controllers/flushControler';
+import { upload } from '..';
 
 const flushRoutes = express.Router();
 
 // Rutas relacionadas con Flush
-flushRoutes.post('/',upload.single('image'), createFlush);
+flushRoutes.post('/', createFlush);
 flushRoutes.get('/', getFlushes);
 flushRoutes.put('/:id', updateFlush);
 flushRoutes.delete('/:id', deleteFlush);
