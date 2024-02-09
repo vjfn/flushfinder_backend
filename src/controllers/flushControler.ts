@@ -54,7 +54,8 @@ export const createFlush = async (req: Request, res: Response) => {
 
     const newFlush = {
       name,
-      image: path.relative(path.join(__dirname, '..', '..'), destinationPath),
+/*       image: path.relative(path.join(__dirname, '..', '..'), destinationPath), */
+      image: imageFileName,  // Cambiado a solo el nombre del archivo
       score,
       condition,
       latitude,
@@ -193,7 +194,34 @@ export const createFlush = async (req: Request, res: Response) => {
   }
 }; */
 
-//READ
+export const getFlushes = async (req: Request, res: Response) => {
+  try {
+    const handicapped = req.query.handicapped;
+    const changingstation = req.query.changingstation;
+    const free = req.query.free;
+
+    const filter: { handicapped?: boolean; changingstation?: boolean; free?: boolean } = {};
+    if (handicapped) filter.handicapped = handicapped === 'true';
+    if (changingstation) filter.changingstation = changingstation === 'true';
+    if (free) filter.free = free === 'true';
+
+    const flushes = await Flush.find(filter);
+
+    // Mapear la respuesta para incluir la URL completa de la imagen
+    const flushListWithImageUrls = flushes.map((flush) => {
+/*       const imageUrl = `${process.env.VUE_APP_API_URL}/uploads/${flush.image}`; */ //URL en .env
+      const imageUrl = `http://localhost:3000/uploads/${flush.image}`;
+      return { ...flush.toJSON(), imageUrl };
+    });
+
+    res.json(flushListWithImageUrls);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error en getFlushes' });
+  }
+};
+
+/* //READ
 export const getFlushes = async (req: Request, res: Response) => {
   try {
     const handicapped = req.query.handicapped;
@@ -212,7 +240,7 @@ export const getFlushes = async (req: Request, res: Response) => {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error en getFlushes' });
   }
-};
+}; */
 
 
 //UPDATE

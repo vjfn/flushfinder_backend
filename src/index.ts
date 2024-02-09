@@ -51,6 +51,9 @@ export const upload: Multer = multer({ storage: storage });
 //Rutas
 app.use('/flush',upload.single('image'), flushRoutes)
 
+// Middleware para servir archivos estáticos desde la carpeta 'uploads'
+/* app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); */
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 //Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 
