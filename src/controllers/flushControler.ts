@@ -7,6 +7,8 @@ import { upload } from '..';
 import * as path from 'path';
 import * as fs from 'fs';
 
+import sharp from 'sharp';
+
 
 const generateRandomNumber = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max - min) + min);
@@ -53,13 +55,24 @@ export const createFlush = async (req: Request, res: Response) => {
     // Ruta de destino para guardar la imagen
     const destinationPath = path.join(__dirname, '..', '..', 'uploads', imageFileName);
 
+    // Usar sharp para redimensionar la imagen antes de moverla
+    const sharpInstance = sharp(imageData.path);
+    await sharpInstance.resize(100, 100).toFile(destinationPath);
+
+    // Borrar el archivo temporal original después de redimensionar
+    fs.unlinkSync(imageData.path);
+
+/*     // Utiliza sharp para redimensionar la imagen antes de guardarla
+    await sharp(imageData.path)
+      .resize(100, 100) // Redimensiona a 100x100 px
+      .toFile(destinationPath);
+
     // Mover la imagen al directorio de uploads con el nuevo nombre
-    fs.renameSync(imageData.path, destinationPath);
+/*     fs.renameSync(imageData.path, destinationPath); */ 
 
     const newFlush = {
       name,
-/*       image: path.relative(path.join(__dirname, '..', '..'), destinationPath), */
-      image: imageFileName,  // Cambiado a solo el nombre del archivo
+      image: imageFileName,
       score,
       condition,
       latitude,
