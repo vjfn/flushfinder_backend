@@ -42,7 +42,6 @@ export const createFlush = async (req: Request, res: Response) => {
     }
 
     if (!imageData) {
-      console.log(imageData)
       console.log("ImageData vacío")
       return res.status(400).json({ error: 'No se proporcionó ninguna imagen' });
     }
@@ -57,18 +56,11 @@ export const createFlush = async (req: Request, res: Response) => {
 
     // Usar sharp para redimensionar la imagen antes de moverla
     const sharpInstance = sharp(imageData.path);
-    await sharpInstance.resize(100, 100).toFile(destinationPath);
+    await sharpInstance.resize(200, 200).toFile(destinationPath);
 
     // Borrar el archivo temporal original después de redimensionar
-    fs.unlinkSync(imageData.path);
+/*     fs.unlinkSync(imageData.path); */
 
-/*     // Utiliza sharp para redimensionar la imagen antes de guardarla
-    await sharp(imageData.path)
-      .resize(100, 100) // Redimensiona a 100x100 px
-      .toFile(destinationPath);
-
-    // Mover la imagen al directorio de uploads con el nuevo nombre
-/*     fs.renameSync(imageData.path, destinationPath); */ 
 
     const newFlush = {
       name,
