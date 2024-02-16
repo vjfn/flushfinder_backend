@@ -1,7 +1,6 @@
 // controllers/flushController.ts
 import { Flush, IFlush } from '../models/flush.model';
 import { Request, Response } from 'express';
-
 import { upload } from '..';
 
 import * as path from 'path';
@@ -38,16 +37,16 @@ export const createFlush = async (req: Request, res: Response) => {
     const imageData = req.file;
 
     if (imageData) {
-      console.log("ImageData Contiene una imagen")
+      console.log(" El Formulario contiene una imagen")
     }
 
     if (!imageData) {
-      console.log("ImageData vacío")
-      return res.status(400).json({ error: 'No se proporcionó ninguna imagen' });
+      console.log("No se ha detectado una imagen en el formulario")
+      return res.status(400).json({ error: 'No se proporcionó ninguna imagen en el formulario' });
     }
 
     // Generar un nombre único para la imagen
-    const randomNum = generateRandomNumber(1, 10000);
+    const randomNum = generateRandomNumber(1000, 10000);
     const currentDate = new Date().toISOString().replace(/:/g, '-').substring(0, 19);
     const imageFileName = `flush_${randomNum}_${currentDate}.jpg`;
 
@@ -55,12 +54,23 @@ export const createFlush = async (req: Request, res: Response) => {
     const destinationPath = path.join(__dirname, '..', '..', 'uploads', imageFileName);
 
     // Usar sharp para redimensionar la imagen antes de moverla
+    sharp.cache(false)
     const sharpInstance = sharp(imageData.path);
-    await sharpInstance.resize(200, 200).toFile(destinationPath);
+    try {
+      await sharpInstance.resize(200, 200).toFormat('jpeg').toFile(destinationPath);
+      console.log('Archivo convertido con éxito:');
+    } catch (error) {
+      console.error('Error al intentar convertir el archivo:', error.message);
+    }
+    
 
     // Borrar el archivo temporal original después de redimensionar
-/*     fs.unlinkSync(imageData.path); */
-
+    try {
+      fs.unlinkSync(imageData.path);
+      console.log('Archivo eliminado con éxito:', imageData.path);
+    } catch (error) {
+      console.error('Error al intentar eliminar el archivo:', error.message);
+    }
 
     const newFlush = {
       name,
@@ -159,19 +169,54 @@ function haversineDistance(pointA: Coordinates, pointB: Coordinates): number {
 }
 
 
-//UPDATE
+// UPDATE
 export const updateFlush = async (req: Request, res: Response) => {
   try {
-      const id = req.params.id;
-      const updatedFlush = await Flush.findByIdAndUpdate(id, req.body, { new: true });
-      if (updatedFlush) {
-          res.json(updatedFlush);
+    const id = req.params.id;
+    const shouldIncrement = req.body.increment;
+    const updatedFlush = await Flush.findById(id);
+
+    if (!updatedFlush) {
+      return res.status(404).json({ error: 'Flush no encontrado' });
+      }else{
+        const eightHoursInMilliseconds = 1 * 60 * 60 * 1000;
+        const currentTime = new Date();
+        const lastUpdate = updatedFlush.lastUpdate || updatedFlush.created;
+
+        const timeDifference = currentTime.getTime() - lastUpdate.getTime();
+
+        if (timeDifference < eightHoursInMilliseconds) {
+          console.log('Menos de 1 hora desde la última actualización. No se realiza ninguna acción.');
+          return res.json(updatedFlush);
       } else {
-          res.status(404).json({ error: 'Document not found' });
-      }
+        updatedFlush.rating += 1;
+        if (shouldIncrement) {
+          updatedFlush.count += 1;
+          if(updatedFlush.score < 5){
+            updatedFlush.score += 0.1
+          }
+        } else {
+          updatedFlush.count -= 1;
+          if(updatedFlush.score > 0){
+            updatedFlush.score -= 0.1
+          }
+        }
+        updatedFlush.lastUpdate = new Date();
+        await updatedFlush.save();
+
+        if (updatedFlush.count <= 0) {
+          await Flush.findByIdAndDelete(id);
+          console.log('Objeto eliminado debido a que count es menor o igual a 0.');
+          /* return res.status(204).send(); // No Content */
+          return res.status(410).json({ message: 'Objeto eliminado' });
+        }
+     } 
+      res.json(updatedFlush);
+      console.log("Respuesta del api: "+ updatedFlush)
+    }   
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error en updateFlush' });
   }
 };
 

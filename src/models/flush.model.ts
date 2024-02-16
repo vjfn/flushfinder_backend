@@ -9,16 +9,13 @@ const flushSchema = new Schema({
         type: String
     },
     score: {
-        type: String
-    },
-    condition: {
-        type: String
+        type: Number
     },
     latitude: {
-        type: String
+        type: Number
     },
     longitude: {
-        type: String
+        type: Number
     },
     handicapped: {
         type: Boolean
@@ -32,28 +29,38 @@ const flushSchema = new Schema({
     created: {
         type: Date
     },
+    lastUpdate: {
+        type: Date
+    },
+    rating: {
+        type: Number,
+        default: 0
+    },
     count: {
         type: Number,
-        default: 1
+        default: 10
     }
 });
 
 flushSchema.pre<IFlush>('save', function (next) {
     this.created = new Date();
+    this.lastUpdate = new Date();
     next();
 });
 
 interface IFlush extends Document {
     name: string;
     image: string;
-    score: string;
+    score: number;
     condition: string;
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
     handicapped: boolean;
     changingstation: boolean;
     free: boolean;
     created: Date;
+    lastUpdate: Date;
+    rating: number;
     count: number;
 
 }
