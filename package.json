@@ -1,6 +1,6 @@
 {
   "name": "flushfinder_backend",
-  "version": "1.0.0",
+  "version": "RC 1.0.0",
   "description": "backend de flushfinder",
   "main": "dist/index.js",
   "scripts": {

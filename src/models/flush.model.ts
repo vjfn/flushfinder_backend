@@ -1,6 +1,8 @@
+// Mongoose Schema para el modelo Flush
 import { Schema, Document, model } from 'mongoose';
 
 const flushSchema = new Schema({
+    // Propiedades del Flush
     name: {
 /*         unique: true, */
         type: String
@@ -8,6 +10,7 @@ const flushSchema = new Schema({
     image: {
         type: String
     },
+    //estrellas del flush
     score: {
         type: Number
     },
@@ -17,6 +20,7 @@ const flushSchema = new Schema({
     longitude: {
         type: Number
     },
+    //Filtros
     handicapped: {
         type: Boolean
     },
@@ -26,22 +30,26 @@ const flushSchema = new Schema({
     free: {
         type: Boolean
     },
+    // Marcas de tiempo para el control de la creación y última actualización
     created: {
         type: Date
     },
     lastUpdate: {
         type: Date
     },
+    //Número de votos
     rating: {
         type: Number,
         default: 0
     },
+    //número de "vidas" inicial del flush
     count: {
         type: Number,
         default: 10
     }
 });
 
+// Middleware para actualizar las marcas de tiempo antes de guardar
 flushSchema.pre<IFlush>('save', function (next) {
     this.created = new Date();
     this.lastUpdate = new Date();
@@ -64,6 +72,6 @@ interface IFlush extends Document {
     count: number;
 
 }
- 
+// Exportar el modelo Flush y la interfaz IFlush para poder usarlo en todo el proyecto
 export const Flush = model<IFlush>('Flush', flushSchema);
 export { IFlush };

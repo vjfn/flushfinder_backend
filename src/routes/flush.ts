@@ -1,6 +1,6 @@
 // ENDPOINTS PARA REALIZAR EL CRUD(CreateReadUpdateDelete) SOBRE LOS FLUSH
 
-// routes/flush.ts
+// Importaciones necesarias
 import express from 'express';
 import { createFlush,getFlushes,updateFlush,deleteFlush } from '../controllers/flushControler';
 

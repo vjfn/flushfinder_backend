@@ -1,3 +1,4 @@
+// Importaciones necesarias
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -12,27 +13,31 @@ import multer, { Multer, StorageEngine,MulterError } from 'multer';
 import { Flush } from './models/flush.model';
 import flushRoutes from './routes/flush';
 
-
-const app = express(); //packete que permite hacer una api
+//packete que permite hacer una api
+const app = express(); 
 
 app.use(cors());
 
-app.use(express.json()); //lee el json porfavor
-app.use(bodyParser.json()); // Middleware para el manejo de solicitudes JSON
+//Necesario para lectura de archivos JSON
+app.use(express.json()); 
+// Middleware para el manejo de solicitudes JSON
+app.use(bodyParser.json()); 
 
-
+//Nuestro primer hito en typescript
 app.get('/', (req, res) => {
     res.send('Hello World with TypeScript!');
 });
 
-//Multer config
-
+//Configuración de multer (Receptor de files)
+//Almacenamiento de archivos temporal hasta que son procesados
 const storage: StorageEngine = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname,  /* '..', */ '..',  'uploads')); // Define la carpeta de destino
+    // Define la carpeta de destino
+    cb(null, path.join(__dirname,  /* '..', */ '..',  'uploads')); 
   },
   filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); // Define el nombre del archivo
+    // Define el nombre del archivo
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname)); 
   },
 });
 
@@ -52,11 +57,11 @@ export const upload: Multer = multer({ storage: storage });
 app.use('/flush',upload.single('image'), flushRoutes)
 
 // Middleware para servir archivos estáticos desde la carpeta 'uploads'
-/* app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); */
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
 //Iniciar el servidor
 const PORT = process.env.PORT || 3000;
-
+//Cuando el servidor está operativo escribe en consola
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
