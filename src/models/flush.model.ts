@@ -60,7 +60,6 @@ interface IFlush extends Document {
     name: string;
     image: string;
     score: number;
-    condition: string;
     latitude: number;
     longitude: number;
     handicapped: boolean;
